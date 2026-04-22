@@ -5,20 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NPTEL Mock Exam Portal</title>
   <meta name="description" content="Practice NPTEL exams with our mock test portal. Upload your questions and take exams just like the real NPTEL/SWAYAM platform.">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="stylesheet" href="css/style.css">
   <style>
     .hero {
       background: linear-gradient(135deg, #002660 0%, #003580 50%, #1a4fa0 100%);
-      color: white;
-      padding: 72px 0 80px;
-      text-align: center;
-      position: relative;
-      overflow: hidden;
+      color: white; padding: 72px 0 80px; text-align: center;
+      position: relative; overflow: hidden;
     }
     .hero::before {
-      content: '';
-      position: absolute;
-      inset: 0;
+      content: ''; position: absolute; inset: 0;
       background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
     }
     .hero-badge {
@@ -27,23 +23,23 @@
       color: #ffb74d; padding: 6px 18px; border-radius: 99px;
       font-size: 13px; font-weight: 600; margin-bottom: 24px;
     }
-    .hero h1 { font-size: clamp(28px,5vw,52px); font-weight: 800; line-height: 1.15; margin-bottom: 16px; }
+    .hero h1 { font-size: clamp(26px,5vw,52px); font-weight: 800; line-height: 1.15; margin-bottom: 16px; }
     .hero h1 .accent { color: #ffb74d; }
-    .hero p { font-size: 18px; opacity: 0.85; max-width: 580px; margin: 0 auto 36px; line-height: 1.7; }
-    .hero-actions { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
-    .hero-actions .btn { padding: 14px 32px; font-size: 15px; border-radius: 10px; }
-    .hero-stats { display: flex; justify-content: center; gap: 48px; margin-top: 56px; flex-wrap: wrap; }
+    .hero p { font-size: clamp(15px,2.5vw,18px); opacity: 0.85; max-width: 580px; margin: 0 auto 36px; line-height: 1.7; padding: 0 12px; }
+    .hero-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; padding: 0 12px; }
+    .hero-actions .btn { padding: 13px 28px; font-size: 15px; border-radius: 10px; }
+    .hero-stats { display: flex; justify-content: center; gap: 32px; margin-top: 52px; flex-wrap: wrap; padding: 0 12px; }
     .hero-stat { text-align: center; }
-    .hero-stat .value { font-size: 32px; font-weight: 800; color: #ffb74d; display: block; }
-    .hero-stat .label { font-size: 13px; opacity: 0.75; }
+    .hero-stat .value { font-size: clamp(24px,4vw,32px); font-weight: 800; color: #ffb74d; display: block; }
+    .hero-stat .label { font-size: 12px; opacity: 0.75; }
 
-    .features-section { padding: 72px 0; background: white; }
-    .section-title { text-align: center; margin-bottom: 48px; }
-    .section-title h2 { font-size: 32px; font-weight: 800; color: var(--text-primary); margin-bottom: 12px; }
-    .section-title p { font-size: 16px; color: var(--text-secondary); max-width: 520px; margin: 0 auto; }
-    .features-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px,1fr)); gap: 24px; }
+    .features-section { padding: 64px 0; background: white; }
+    .section-title { text-align: center; margin-bottom: 40px; padding: 0 16px; }
+    .section-title h2 { font-size: clamp(22px,4vw,32px); font-weight: 800; color: var(--text-primary); margin-bottom: 10px; }
+    .section-title p { font-size: 15px; color: var(--text-secondary); max-width: 500px; margin: 0 auto; }
+    .features-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px,1fr)); gap: 20px; }
     .feature-card {
-      padding: 28px; border-radius: 14px; border: 1.5px solid var(--border);
+      padding: 24px; border-radius: 14px; border: 1.5px solid var(--border);
       background: #fafcff; transition: all 0.25s ease; position: relative; overflow: hidden;
     }
     .feature-card::before {
@@ -53,41 +49,41 @@
     }
     .feature-card:hover::before { transform: scaleX(1); }
     .feature-card:hover { border-color: var(--primary-light); box-shadow: var(--shadow-md); transform: translateY(-4px); }
-    .feature-icon { font-size: 38px; margin-bottom: 16px; display: block; }
-    .feature-card h3 { font-size: 17px; font-weight: 700; color: var(--text-primary); margin-bottom: 8px; }
-    .feature-card p { font-size: 14px; color: var(--text-secondary); line-height: 1.65; }
+    .feature-icon { font-size: 34px; margin-bottom: 14px; display: block; }
+    .feature-card h3 { font-size: 16px; font-weight: 700; color: var(--text-primary); margin-bottom: 6px; }
+    .feature-card p { font-size: 13.5px; color: var(--text-secondary); line-height: 1.6; }
 
-    .exams-section { padding: 64px 0; background: var(--bg-page); }
-    .exams-grid-home { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px,1fr)); gap: 24px; }
+    .exams-section { padding: 56px 0; background: var(--bg-page); }
+    .exams-grid-home { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px,1fr)); gap: 20px; }
     .exam-card-home {
       background: white; border: 1px solid var(--border); border-radius: 14px;
-      padding: 24px; transition: all 0.22s ease; display: flex; flex-direction: column;
+      padding: 22px; transition: all 0.22s ease; display: flex; flex-direction: column;
     }
     .exam-card-home:hover { box-shadow: var(--shadow-md); transform: translateY(-3px); border-color: #a5b4fc; }
-    .exam-card-home .ech-header { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
+    .exam-card-home .ech-header { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; }
     .ech-icon {
-      width: 50px; height: 50px; border-radius: 12px; flex-shrink: 0;
+      width: 46px; height: 46px; border-radius: 10px; flex-shrink: 0;
       background: linear-gradient(135deg, var(--primary), var(--primary-light));
-      display: flex; align-items: center; justify-content: center; font-size: 24px;
+      display: flex; align-items: center; justify-content: center; font-size: 22px;
     }
     .ech-title { font-size: 15px; font-weight: 700; color: var(--text-primary); }
     .ech-date  { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
-    .ech-desc  { font-size: 13px; color: var(--text-secondary); margin-bottom: 16px; flex: 1; }
-    .ech-meta  { display: flex; gap: 16px; font-size: 12px; color: var(--text-secondary); margin-bottom: 16px; flex-wrap: wrap; }
+    .ech-desc  { font-size: 13px; color: var(--text-secondary); margin-bottom: 14px; flex: 1; }
+    .ech-meta  { display: flex; gap: 14px; font-size: 12px; color: var(--text-secondary); margin-bottom: 14px; flex-wrap: wrap; }
     .ech-meta span { display: flex; align-items: center; gap: 4px; }
-    .no-exams-home { text-align: center; padding: 60px 24px; color: var(--text-muted); grid-column: 1 / -1; }
-    .no-exams-home .big-icon { font-size: 64px; margin-bottom: 16px; }
-    .no-exams-home h3 { font-size: 22px; color: var(--text-primary); font-weight: 700; margin-bottom: 8px; }
-    .no-exams-home p  { font-size: 15px; margin-bottom: 20px; }
-
-    .info-banner { background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: white; padding: 48px 0; text-align: center; }
-    .info-banner h2 { font-size: 26px; font-weight: 700; margin-bottom: 8px; }
-    .info-banner p  { font-size: 15px; opacity: 0.85; margin-bottom: 24px; max-width: 520px; margin-left: auto; margin-right: auto; }
+    .no-exams-home { text-align: center; padding: 56px 24px; color: var(--text-muted); grid-column: 1 / -1; }
+    .no-exams-home .big-icon { font-size: 56px; margin-bottom: 14px; }
+    .no-exams-home h3 { font-size: 20px; color: var(--text-primary); font-weight: 700; margin-bottom: 8px; }
+    .no-exams-home p  { font-size: 14px; margin-bottom: 18px; }
+    .info-banner { background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: white; padding: 48px 24px; text-align: center; }
+    .info-banner h2 { font-size: clamp(20px,3vw,26px); font-weight: 700; margin-bottom: 8px; }
+    .info-banner p  { font-size: 15px; opacity: 0.85; margin-bottom: 24px; max-width: 500px; margin-left: auto; margin-right: auto; }
 
     @media (max-width: 600px) {
-      .hero { padding: 48px 0 60px; }
-      .hero-stats { gap: 28px; }
-      .features-section { padding: 48px 0; }
+      .hero { padding: 48px 0 56px; }
+      .hero-stats { gap: 20px; }
+      .features-section { padding: 44px 0; }
+      .site-header .logo-text p { display: none; }
     }
   </style>
 </head>
@@ -102,7 +98,7 @@
     </div>
   </div>
   <nav>
-    <a href="admin.html" class="btn btn-secondary">⚙️ Admin Panel</a>
+    <a href="admin.html" class="btn btn-secondary" style="padding:8px 14px;font-size:13px;">⚙️ Admin</a>
   </nav>
 </header>
 
@@ -116,18 +112,9 @@
       <a href="admin.html" class="btn btn-secondary">⬆️ Upload Questions</a>
     </div>
     <div class="hero-stats">
-      <div class="hero-stat">
-        <span class="value" id="total-exams-count">…</span>
-        <span class="label">Exams Available</span>
-      </div>
-      <div class="hero-stat">
-        <span class="value" id="total-questions-count">…</span>
-        <span class="label">Total Questions</span>
-      </div>
-      <div class="hero-stat">
-        <span class="value">100%</span>
-        <span class="label">Free to Use</span>
-      </div>
+      <div class="hero-stat"><span class="value" id="total-exams-count">…</span><span class="label">Exams Available</span></div>
+      <div class="hero-stat"><span class="value" id="total-questions-count">…</span><span class="label">Total Questions</span></div>
+      <div class="hero-stat"><span class="value">100%</span><span class="label">Free to Use</span></div>
     </div>
   </div>
 </section>
@@ -139,12 +126,12 @@
       <p>Built to simulate the actual NPTEL exam experience so there are no surprises on exam day.</p>
     </div>
     <div class="features-grid">
-      <div class="feature-card fade-in"><span class="feature-icon">⏱️</span><h3>Live Countdown Timer</h3><p>Practise with a real-time countdown that turns red when time is running out — just like the NPTEL exam.</p></div>
-      <div class="feature-card fade-in"><span class="feature-icon">🎨</span><h3>NPTEL Question Palette</h3><p>Color-coded palette — grey, red, green, purple — exactly mirrors the official SWAYAM exam interface.</p></div>
-      <div class="feature-card fade-in"><span class="feature-icon">🔖</span><h3>Mark for Review</h3><p>Flag uncertain questions for review and revisit them before submitting — just as in the actual exam.</p></div>
-      <div class="feature-card fade-in"><span class="feature-icon">📊</span><h3>Detailed Score Analysis</h3><p>Get instant results with correct/wrong/skipped breakdown and a question-by-question review with explanations.</p></div>
-      <div class="feature-card fade-in"><span class="feature-icon">📤</span><h3>Easy CSV Upload</h3><p>Admins can upload questions via a simple CSV file. Drag-and-drop support with instant preview.</p></div>
-      <div class="feature-card fade-in"><span class="feature-icon">☁️</span><h3>Shared via Firebase</h3><p>Exams saved by the admin are instantly visible to all students accessing the site — no login needed.</p></div>
+      <div class="feature-card fade-in"><span class="feature-icon">⏱️</span><h3>Live Countdown Timer</h3><p>Real-time countdown that turns red when time is running out — just like the NPTEL exam.</p></div>
+      <div class="feature-card fade-in"><span class="feature-icon">🎨</span><h3>NPTEL Question Palette</h3><p>Color-coded palette — grey, red, green, purple — mirrors the official SWAYAM interface exactly.</p></div>
+      <div class="feature-card fade-in"><span class="feature-icon">🔖</span><h3>Mark for Review</h3><p>Flag uncertain questions and revisit them before submitting — just as in the actual exam.</p></div>
+      <div class="feature-card fade-in"><span class="feature-icon">📊</span><h3>Detailed Score Analysis</h3><p>Instant results with correct/wrong/skipped breakdown and per-question review with explanations.</p></div>
+      <div class="feature-card fade-in"><span class="feature-icon">📤</span><h3>Easy CSV Upload</h3><p>Admins upload questions via a simple CSV file. Drag-and-drop support with instant preview.</p></div>
+      <div class="feature-card fade-in"><span class="feature-icon">☁️</span><h3>Shared via Firebase</h3><p>Exams saved by the admin are instantly visible to all students — no login needed to take exams.</p></div>
     </div>
   </div>
 </section>
@@ -156,7 +143,7 @@
       <p>Select an exam below to start practicing. New exams can be added via the Admin Panel.</p>
     </div>
     <div class="exams-grid-home" id="exams-grid">
-      <!-- Populated by JS -->
+      <div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-muted);">Loading exams… ⏳</div>
     </div>
   </div>
 </section>
@@ -165,28 +152,24 @@
   <div class="container">
     <h2>Are you an Instructor?</h2>
     <p>Upload your own question bank via a simple CSV file and share the exam with your students instantly.</p>
-    <a href="admin.html" class="btn btn-primary" style="font-size:15px;padding:14px 32px;">⚙️ Go to Admin Panel</a>
+    <a href="admin.html" class="btn btn-primary" style="font-size:15px;padding:13px 28px;">⚙️ Go to Admin Panel</a>
   </div>
 </section>
 
 <footer class="site-footer">
-  <p>NPTEL Mock Exam Portal &mdash; Not officially affiliated with <strong>NPTEL</strong> or <strong>IITs</strong>.</p>
+  <p>Crafted by <strong style="color:var(--accent-light);">Light</strong> &mdash; Not officially affiliated with NPTEL or IITs.</p>
 </footer>
 
 <div id="toast-container"></div>
 
-<!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script src="js/config.js"></script>
 <script>
   const LS_KEY = 'nptel_exams';
-  function getLocalExams() {
-    try { return JSON.parse(localStorage.getItem(LS_KEY)) || []; } catch { return []; }
-  }
-  function esc(str) {
-    return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  }
+  function getLocalExams() { try { return JSON.parse(localStorage.getItem(LS_KEY)) || []; } catch { return []; } }
+  function esc(str) { return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
   function renderCards(exams) {
     const grid = document.getElementById('exams-grid');
     document.getElementById('total-exams-count').textContent     = exams.length;
@@ -200,26 +183,24 @@
       return `<div class="exam-card-home fade-in">
         <div class="ech-header"><div class="ech-icon">📝</div><div><div class="ech-title">${esc(exam.name)}</div><div class="ech-date">Added: ${d}</div></div></div>
         <div class="ech-desc">${esc(exam.description||'Click Start Exam to begin practicing.')}</div>
-        <div class="ech-meta"><span>📚 <strong>${exam.totalQuestions}</strong> Questions</span><span>⏱ <strong>${exam.duration}</strong> min</span></div>
+        <div class="ech-meta"><span>📚 <strong>${exam.totalQuestions}</strong> Qs</span><span>⏱ <strong>${exam.duration}</strong> min</span></div>
         <a href="exam.html?id=${exam.id}" class="btn btn-primary" style="width:100%;justify-content:center;">▶ Start Exam</a>
       </div>`;
     }).join('');
   }
+
   async function load() {
-    const grid = document.getElementById('exams-grid');
-    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-muted);">Loading exams… ⏳</div>`;
     try {
       if (FIREBASE_ENABLED) {
         if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
         const snap  = await firebase.database().ref(DB_PATH).once('value');
-        const data  = snap.val() || {};
-        const exams = Object.values(data).sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
+        const exams = Object.values(snap.val()||{}).sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
         renderCards(exams);
       } else {
         renderCards(getLocalExams().slice().reverse());
       }
     } catch(e) {
-      grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:40px;color:#dc2626;">Error: ${e.message}</div>`;
+      document.getElementById('exams-grid').innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:40px;color:#dc2626;">Error loading exams: ${e.message}</div>`;
     }
   }
   load();

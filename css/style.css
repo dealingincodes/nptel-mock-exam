@@ -394,7 +394,53 @@ img {
 }
 ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
-/* ── Animations ────────────────────────────────────────────── */
+/* ── Mobile Responsive ─────────────────────────────────────── */
+@media (max-width: 640px) {
+  .site-header {
+    padding: 0 14px;
+    height: 56px;
+  }
+
+  .site-header .logo-text p {
+    display: none;
+  }
+
+  .site-header nav .btn {
+    padding: 7px 12px;
+    font-size: 12px;
+  }
+
+  .container {
+    padding: 0 16px;
+  }
+
+  .btn {
+    padding: 8px 14px;
+    font-size: 13px;
+  }
+
+  .modal {
+    max-width: 95%;
+    border-radius: var(--radius-lg);
+  }
+
+  .modal-body,
+  .modal-footer,
+  .modal-header {
+    padding: 14px 16px;
+  }
+
+  #toast-container {
+    bottom: 16px;
+    right: 16px;
+    left: 16px;
+  }
+
+  .toast {
+    max-width: 100%;
+  }
+}
+
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(8px); }
   to   { opacity: 1; transform: translateY(0); }
