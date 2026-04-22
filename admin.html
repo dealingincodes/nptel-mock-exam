@@ -13,7 +13,7 @@
 <div class="admin-layout">
 
   <!-- Firebase config banner -->
-  <div id="firebase-banner" style="display:none;background:#fffbeb;border-bottom:2px solid #f59e0b;padding:12px 24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+  <div id="firebase-banner" style="display:none;" class="firebase-warning-bar">
     <span style="font-size:22px;">⚠️</span>
     <div style="flex:1;min-width:200px;">
       <strong style="color:#92400e;">Firebase not configured</strong> — Exams are currently saved locally (only visible to you).
@@ -51,7 +51,7 @@
       <!-- ════════════════════════════════════════════ -->
       <div class="tab-panel active" id="upload-panel">
 
-        <div style="display:grid;grid-template-columns:1fr 380px;gap:28px;align-items:start;">
+        <div class="upload-config-grid" style="display:grid;grid-template-columns:1fr 380px;gap:28px;align-items:start;">
 
           <!-- Left Column -->
           <div>
@@ -164,7 +164,7 @@
 
           <!-- Right Column: Config -->
           <div>
-            <div class="card" style="position:sticky;top:80px;">
+            <div class="card config-sticky" style="position:sticky;top:80px;">
               <div class="card-header">
                 <h2>⚙️ Exam Configuration</h2>
               </div>
