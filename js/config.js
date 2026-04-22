@@ -5,7 +5,7 @@
 const FIREBASE_CONFIG = {
   apiKey:            "AIzaSyCj9nwktcTWctcUWZBvF-fsfJPSm5--QTk",
   authDomain:        "nptel-quiz-53488.firebaseapp.com",
-  databaseURL:       "https://nptel-quiz-53488-default-rtdb.firebaseio.com",
+  databaseURL:       "https://nptel-quiz-53488-default-rtdb.asia-southeast1.firebasedatabase.app",
   projectId:         "nptel-quiz-53488",
   storageBucket:     "nptel-quiz-53488.firebasestorage.app",
   messagingSenderId: "224439483475",
