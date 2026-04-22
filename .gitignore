@@ -1,0 +1,21 @@
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor directories
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+
+# Node (if ever added)
+node_modules/
+npm-debug.log*
+
+# Python server cache
+__pycache__/
+*.pyc

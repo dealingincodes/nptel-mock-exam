@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NPTEL Mock Exam Portal</title>
+  <meta name="description" content="Practice NPTEL exams with our mock test portal. Upload your questions and take exams just like the real NPTEL/SWAYAM platform.">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* ── Hero Section ─────────────────────────── */
+    .hero {
+      background: linear-gradient(135deg, #002660 0%, #003580 50%, #1a4fa0 100%);
+      color: white;
+      padding: 72px 0 80px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(245,124,0,0.2);
+      border: 1px solid rgba(245,124,0,0.4);
+      color: #ffb74d;
+      padding: 6px 18px;
+      border-radius: 99px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 24px;
+    }
+
+    .hero h1 {
+      font-size: clamp(28px, 5vw, 52px);
+      font-weight: 800;
+      line-height: 1.15;
+      margin-bottom: 16px;
+    }
+
+    .hero h1 .accent { color: #ffb74d; }
+
+    .hero p {
+      font-size: 18px;
+      opacity: 0.85;
+      max-width: 580px;
+      margin: 0 auto 36px;
+      line-height: 1.7;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .hero-actions .btn {
+      padding: 14px 32px;
+      font-size: 15px;
+      border-radius: 10px;
+    }
+
+    .hero-stats {
+      display: flex;
+      justify-content: center;
+      gap: 48px;
+      margin-top: 56px;
+      flex-wrap: wrap;
+    }
+
+    .hero-stat {
+      text-align: center;
+    }
+
+    .hero-stat .value {
+      font-size: 32px;
+      font-weight: 800;
+      color: #ffb74d;
+      display: block;
+    }
+
+    .hero-stat .label {
+      font-size: 13px;
+      opacity: 0.75;
+    }
+
+    /* ── Features Section ─────────────────────── */
+    .features-section {
+      padding: 72px 0;
+      background: white;
+    }
+
+    .section-title {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+
+    .section-title h2 {
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--text-primary);
+      margin-bottom: 12px;
+    }
+
+    .section-title p {
+      font-size: 16px;
+      color: var(--text-secondary);
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 24px;
+    }
+
+    .feature-card {
+      padding: 28px;
+      border-radius: 14px;
+      border: 1.5px solid var(--border);
+      background: #fafcff;
+      transition: all 0.25s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.3s ease;
+    }
+
+    .feature-card:hover::before { transform: scaleX(1); }
+    .feature-card:hover {
+      border-color: var(--primary-light);
+      box-shadow: var(--shadow-md);
+      transform: translateY(-4px);
+    }
+
+    .feature-icon {
+      font-size: 38px;
+      margin-bottom: 16px;
+      display: block;
+    }
+
+    .feature-card h3 {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+
+    .feature-card p {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.65;
+    }
+
+    /* ── Available Exams Section ──────────────── */
+    .exams-section {
+      padding: 64px 0;
+      background: var(--bg-page);
+    }
+
+    .exams-grid-home {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 24px;
+    }
+
+    .exam-card-home {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 24px;
+      transition: all 0.22s ease;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .exam-card-home:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-3px);
+      border-color: #a5b4fc;
+    }
+
+    .exam-card-home .ech-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
+    .ech-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+
+    .ech-title { font-size: 15px; font-weight: 700; color: var(--text-primary); }
+    .ech-date  { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+    .ech-desc {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 16px;
+      flex: 1;
+    }
+
+    .ech-meta {
+      display: flex;
+      gap: 16px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .ech-meta span { display: flex; align-items: center; gap: 4px; }
+
+    .no-exams-home {
+      text-align: center;
+      padding: 60px 24px;
+      color: var(--text-muted);
+      grid-column: 1 / -1;
+    }
+
+    .no-exams-home .big-icon { font-size: 64px; margin-bottom: 16px; }
+    .no-exams-home h3 { font-size: 22px; color: var(--text-primary); font-weight: 700; margin-bottom: 8px; }
+    .no-exams-home p  { font-size: 15px; margin-bottom: 20px; }
+
+    /* ── Info banner ──────────────────────────── */
+    .info-banner {
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      padding: 48px 0;
+      text-align: center;
+    }
+
+    .info-banner h2 { font-size: 26px; font-weight: 700; margin-bottom: 8px; }
+    .info-banner p  { font-size: 15px; opacity: 0.85; margin-bottom: 24px; max-width: 520px; margin-left: auto; margin-right: auto; }
+
+    /* ── Responsive ───────────────────────────── */
+    @media (max-width: 600px) {
+      .hero { padding: 48px 0 60px; }
+      .hero-stats { gap: 28px; }
+      .features-section { padding: 48px 0; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="site-header">
+  <div class="logo">
+    <div class="logo-icon">N</div>
+    <div class="logo-text">
+      <h1>NPTEL Mock Exam</h1>
+      <p>Practice & Prepare</p>
+    </div>
+  </div>
+  <nav>
+    <a href="admin.html" class="btn btn-secondary">⚙️ Admin Panel</a>
+  </nav>
+</header>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="container" style="position:relative;z-index:1;">
+    <div class="hero-badge">🎓 NPTEL/SWAYAM Style Mock Tests</div>
+    <h1>Practice Smarter,<br>Score <span class="accent">Better</span></h1>
+    <p>Take realistic NPTEL-style mock exams with question palettes, countdown timer, and instant results with detailed review.</p>
+    <div class="hero-actions">
+      <a href="#exams" class="btn btn-primary">📚 Browse Exams</a>
+      <a href="admin.html" class="btn btn-secondary">⬆️ Upload Questions</a>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <span class="value" id="total-exams-count">0</span>
+        <span class="label">Exams Available</span>
+      </div>
+      <div class="hero-stat">
+        <span class="value" id="total-questions-count">0</span>
+        <span class="label">Total Questions</span>
+      </div>
+      <div class="hero-stat">
+        <span class="value">100%</span>
+        <span class="label">Free to Use</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Features -->
+<section class="features-section">
+  <div class="container">
+    <div class="section-title">
+      <h2>Why Practice Here?</h2>
+      <p>Built to simulate the actual NPTEL exam experience so there are no surprises on exam day.</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card fade-in">
+        <span class="feature-icon">⏱️</span>
+        <h3>Live Countdown Timer</h3>
+        <p>Practise with a real-time countdown that turns red when time is running out — just like the NPTEL exam.</p>
+      </div>
+      <div class="feature-card fade-in">
+        <span class="feature-icon">🎨</span>
+        <h3>NPTEL Question Palette</h3>
+        <p>Color-coded palette — grey, red, green, purple — exactly mirrors the official SWAYAM exam interface.</p>
+      </div>
+      <div class="feature-card fade-in">
+        <span class="feature-icon">🔖</span>
+        <h3>Mark for Review</h3>
+        <p>Flag uncertain questions for review and revisit them before submitting — just as in the actual exam.</p>
+      </div>
+      <div class="feature-card fade-in">
+        <span class="feature-icon">📊</span>
+        <h3>Detailed Score Analysis</h3>
+        <p>Get instant results with correct/wrong/skipped breakdown and a question-by-question review with explanations.</p>
+      </div>
+      <div class="feature-card fade-in">
+        <span class="feature-icon">📤</span>
+        <h3>Easy CSV Upload</h3>
+        <p>Admins can upload questions via a simple CSV file. Drag-and-drop support with instant preview.</p>
+      </div>
+      <div class="feature-card fade-in">
+        <span class="feature-icon">🔀</span>
+        <h3>Question Shuffling</h3>
+        <p>Enable random order of questions and/or options for a fresh experience each time you attempt.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Exams List -->
+<section class="exams-section" id="exams">
+  <div class="container">
+    <div class="section-title">
+      <h2>Available Exams</h2>
+      <p>Select an exam below to start practicing. New exams can be added via the Admin Panel.</p>
+    </div>
+    <div class="exams-grid-home" id="exams-grid">
+      <!-- Populated by JS -->
+    </div>
+  </div>
+</section>
+
+<!-- CTA Banner -->
+<section class="info-banner">
+  <div class="container">
+    <h2>Are you an Instructor?</h2>
+    <p>Upload your own question bank via a simple CSV file and share the exam with your students instantly.</p>
+    <a href="admin.html" class="btn btn-primary" style="font-size:15px;padding:14px 32px;">⚙️ Go to Admin Panel</a>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="site-footer">
+  <p>NPTEL Mock Exam Portal &mdash; Built for students, by students. Not officially affiliated with <strong>NPTEL</strong> or <strong>IITs</strong>.</p>
+</footer>
+
+<div id="toast-container"></div>
+
+<script>
+  const DB_KEY = 'nptel_exams';
+
+  function getExams() {
+    try { return JSON.parse(localStorage.getItem(DB_KEY)) || []; }
+    catch { return []; }
+  }
+
+  function escHtml(str) {
+    if (!str) return '';
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function renderExams() {
+    const exams = getExams();
+    const grid = document.getElementById('exams-grid');
+
+    document.getElementById('total-exams-count').textContent = exams.length;
+    document.getElementById('total-questions-count').textContent = exams.reduce((s,e) => s + e.totalQuestions, 0);
+
+    if (exams.length === 0) {
+      grid.innerHTML = `
+        <div class="no-exams-home">
+          <div class="big-icon">📭</div>
+          <h3>No Exams Yet</h3>
+          <p>No exams have been created. Head to the Admin Panel to upload your questions.</p>
+          <a href="admin.html" class="btn btn-primary">⚙️ Admin Panel</a>
+        </div>`;
+      return;
+    }
+
+    grid.innerHTML = exams.map(exam => {
+      const date = new Date(exam.createdAt);
+      const dateStr = date.toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' });
+      return `
+        <div class="exam-card-home fade-in">
+          <div class="ech-header">
+            <div class="ech-icon">📝</div>
+            <div>
+              <div class="ech-title">${escHtml(exam.name)}</div>
+              <div class="ech-date">Added: ${dateStr}</div>
+            </div>
+          </div>
+          <div class="ech-desc">${escHtml(exam.description || 'Click Start Exam to begin practicing.')}</div>
+          <div class="ech-meta">
+            <span>📚 <strong>${exam.totalQuestions}</strong> Questions</span>
+            <span>⏱ <strong>${exam.duration}</strong> minutes</span>
+          </div>
+          <a href="exam.html?id=${exam.id}" class="btn btn-primary" style="width:100%;justify-content:center;">▶ Start Exam</a>
+        </div>`;
+    }).join('');
+  }
+
+  renderExams();
+</script>
+</body>
+</html>

@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exam Results — NPTEL Mock Exam</title>
+  <meta name="description" content="Your NPTEL mock exam results with detailed question review.">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    body { background: var(--bg-page); overflow: auto; }
+
+    /* ── Results Header ───────────────────── */
+    .results-header {
+      background: linear-gradient(135deg, #002660, #003580);
+      color: white;
+      padding: 32px 0 0;
+    }
+
+    .results-header .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 28px;
+    }
+
+    .results-header .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .results-header .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--accent);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 18px; color: white;
+    }
+
+    .results-header .logo-text h1 { font-size: 17px; font-weight: 700; }
+    .results-header .logo-text p  { font-size: 12px; opacity: 0.75; }
+
+    /* ── Score Section ────────────────────── */
+    .score-section {
+      display: flex;
+      gap: 32px;
+      align-items: flex-start;
+      padding-bottom: 32px;
+      flex-wrap: wrap;
+    }
+
+    .score-circle {
+      width: 160px;
+      height: 160px;
+      border-radius: 50%;
+      border: 6px solid var(--q-answered);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255,255,255,0.1);
+      flex-shrink: 0;
+      text-align: center;
+    }
+
+    .score-main {
+      font-size: 44px;
+      font-weight: 800;
+      color: white;
+      line-height: 1;
+    }
+
+    .score-total { font-size: 22px; font-weight: 400; opacity: 0.8; }
+    .score-pct   { font-size: 16px; font-weight: 600; color: #ffb74d; margin-top: 4px; }
+    .score-verdict {
+      font-size: 13px;
+      font-weight: 700;
+      margin-top: 4px;
+      padding: 3px 12px;
+      border-radius: 99px;
+      letter-spacing: 0.5px;
+    }
+
+    .score-verdict.pass { background: rgba(39,174,96,0.3); color: #a3f0c4; }
+    .score-verdict.fail { background: rgba(231,76,60,0.3);  color: #ffa3a3; }
+
+    .score-details {
+      flex: 1;
+      min-width: 240px;
+    }
+
+    .score-details h2 {
+      font-size: 22px;
+      font-weight: 800;
+      color: white;
+      margin-bottom: 4px;
+    }
+
+    .score-details .exam-meta {
+      font-size: 13px;
+      opacity: 0.75;
+      margin-bottom: 20px;
+    }
+
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+      gap: 12px;
+    }
+
+    .stat-box {
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 10px;
+      padding: 14px 10px;
+      text-align: center;
+    }
+
+    .stat-box .s-val { font-size: 26px; font-weight: 800; color: white; display: block; }
+    .stat-box .s-lbl { font-size: 11px; color: rgba(255,255,255,0.7); text-transform: uppercase; letter-spacing: 0.5px; }
+    .stat-box.correct .s-val { color: #6ee7b7; }
+    .stat-box.wrong   .s-val { color: #fca5a5; }
+    .stat-box.skipped .s-val { color: #fbbf24; }
+
+    /* ── Progress Bar ─────────────────────── */
+    .progress-bar-wrap {
+      background: rgba(255,255,255,0.15);
+      border-radius: 99px;
+      height: 10px;
+      margin-top: 20px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      border-radius: 99px;
+      transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+      width: 0%;
+    }
+
+    /* ── Review Section ───────────────────── */
+    .review-section {
+      padding: 40px 0 64px;
+    }
+
+    .review-toolbar {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .filter-btn {
+      padding: 8px 16px;
+      border-radius: 99px;
+      border: 1.5px solid var(--border);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      background: white;
+      color: var(--text-secondary);
+      transition: all 0.2s;
+      font-family: var(--font-sans);
+    }
+
+    .filter-btn:hover { border-color: var(--primary); color: var(--primary); }
+    .filter-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+    .search-box {
+      margin-left: auto;
+      position: relative;
+    }
+
+    .search-box input {
+      padding: 8px 14px 8px 36px;
+      border: 1.5px solid var(--border);
+      border-radius: 99px;
+      font-size: 13px;
+      font-family: var(--font-sans);
+      outline: none;
+      width: 220px;
+      transition: border-color 0.2s;
+    }
+
+    .search-box input:focus { border-color: var(--primary); }
+
+    .search-box .search-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    /* ── Review Table ─────────────────────── */
+    .review-table-wrapper {
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border);
+    }
+
+    .review-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      font-size: 13px;
+    }
+
+    .review-table thead {
+      background: var(--primary);
+      color: white;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .review-table thead th {
+      padding: 12px 14px;
+      text-align: left;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .review-table tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background 0.15s;
+    }
+
+    .review-table tbody tr:last-child { border-bottom: none; }
+    .review-table tbody tr:hover { background: #f8faff; }
+
+    .review-table td {
+      padding: 12px 14px;
+      vertical-align: top;
+    }
+
+    /* Row colors */
+    .row-correct { background: #f0fdf4; }
+    .row-correct:hover { background: #e8faf0 !important; }
+    .row-wrong   { background: #fff7f7; }
+    .row-wrong:hover { background: #ffefef !important; }
+    .row-skipped { background: #fffcf0; }
+    .row-skipped:hover { background: #fff8e0 !important; }
+
+    /* Columns */
+    .q-index { font-weight: 700; color: var(--text-secondary); width: 40px; }
+    .q-text  { max-width: 280px; line-height: 1.5; }
+
+    .review-option {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 4px;
+      font-size: 12.5px;
+      align-items: flex-start;
+    }
+
+    .review-option.highlight-correct { color: #166534; font-weight: 600; }
+    .review-option.highlight-wrong   { color: #991b1b; text-decoration: line-through; }
+
+    .opt-letter {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #e2e8f0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 11px;
+      flex-shrink: 0;
+    }
+
+    .highlight-correct .opt-letter { background: #bbf7d0; color: #166534; }
+    .highlight-wrong   .opt-letter { background: #fecaca; color: #991b1b; }
+
+    .user-ans {
+      font-size: 12.5px;
+      color: var(--text-primary);
+      background: #eff6ff;
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+
+    .user-ans.skipped {
+      background: #fffbeb;
+      color: #92400e;
+      font-style: italic;
+    }
+
+    .correct-opt {
+      font-size: 12.5px;
+      color: #166534;
+      background: #dcfce7;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+
+    /* Badges */
+    .r-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 10px;
+      border-radius: 99px;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .badge-correct { background: #dcfce7; color: #166534; }
+    .badge-wrong   { background: #fee2e2; color: #991b1b; }
+    .badge-skip    { background: #fef9c3; color: #854d0e; }
+
+    .exp-text {
+      font-size: 12px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      max-width: 220px;
+      display: block;
+    }
+
+    .no-exp { color: var(--text-muted); font-style: italic; }
+
+    /* ── Action Bar ───────────────────────── */
+    .action-bar {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 32px;
+    }
+
+    /* ── No Result ────────────────────────── */
+    #no-result {
+      min-height: 70vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: 16px;
+    }
+
+    #no-result .big-icon { font-size: 72px; }
+    #no-result h2 { font-size: 24px; font-weight: 700; color: var(--text-primary); }
+    #no-result p  { font-size: 15px; color: var(--text-secondary); }
+
+    /* ── Responsive ───────────────────────── */
+    @media (max-width: 700px) {
+      .score-section { flex-direction: column; align-items: center; text-align: center; }
+      .score-circle  { width: 130px; height: 130px; }
+      .score-main    { font-size: 36px; }
+      .review-toolbar { gap: 8px; }
+      .search-box input { width: 170px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- No result fallback -->
+<div id="no-result" style="display:none;">
+  <div class="big-icon">📋</div>
+  <h2>No Results Found</h2>
+  <p>You haven't completed an exam yet, or the result data was cleared.</p>
+  <a href="index.html" class="btn btn-primary">🏠 Go to Home</a>
+</div>
+
+<!-- Result Content -->
+<div id="result-content" style="display:none;">
+
+  <!-- Header / Score -->
+  <div class="results-header">
+    <div class="container">
+      <div class="top-bar">
+        <div class="logo-area">
+          <div class="logo-icon">N</div>
+          <div class="logo-text">
+            <h1>Exam Completed</h1>
+            <p>NPTEL Mock Exam Portal</p>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;">
+          <a href="index.html" class="btn btn-secondary">🏠 Home</a>
+        </div>
+      </div>
+
+      <div class="score-section">
+        <div class="score-circle" id="score-circle">
+          <!-- Populated by JS -->
+        </div>
+        <div class="score-details">
+          <h2 id="exam-name-display">Exam Results</h2>
+          <div class="exam-meta">
+            Submitted: <span id="submitted-at">—</span>
+            &nbsp;·&nbsp; Time Taken: <span id="stat-time">—</span>
+          </div>
+
+          <div class="stats-row">
+            <div class="stat-box correct">
+              <span class="s-val" id="stat-correct">0</span>
+              <span class="s-lbl">✓ Correct</span>
+            </div>
+            <div class="stat-box wrong">
+              <span class="s-val" id="stat-wrong">0</span>
+              <span class="s-lbl">✗ Wrong</span>
+            </div>
+            <div class="stat-box skipped">
+              <span class="s-val" id="stat-skipped">0</span>
+              <span class="s-lbl">– Skipped</span>
+            </div>
+            <div class="stat-box">
+              <span class="s-val" id="stat-accuracy">—</span>
+              <span class="s-lbl">Accuracy</span>
+            </div>
+          </div>
+
+          <div class="progress-bar-wrap">
+            <div class="progress-bar-fill" id="score-progress"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Review Section -->
+  <section class="review-section">
+    <div class="container">
+
+      <h2 style="font-size:22px;font-weight:800;color:var(--text-primary);margin-bottom:6px;">📋 Question-by-Question Review</h2>
+      <p style="font-size:14px;color:var(--text-secondary);margin-bottom:24px;">Review all questions with correct answers and explanations below.</p>
+
+      <div class="review-toolbar">
+        <button class="filter-btn active" id="filter-all">All</button>
+        <button class="filter-btn" id="filter-correct" style="color:#166534;border-color:#bbf7d0;">✓ Correct</button>
+        <button class="filter-btn" id="filter-wrong"   style="color:#991b1b;border-color:#fecaca;">✗ Wrong</button>
+        <button class="filter-btn" id="filter-skipped" style="color:#854d0e;border-color:#fef9c3;">– Skipped</button>
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="search-questions" placeholder="Search questions…">
+        </div>
+      </div>
+
+      <div class="review-table-wrapper">
+        <table class="review-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Question</th>
+              <th>Options</th>
+              <th>Your Answer</th>
+              <th>Correct Answer</th>
+              <th>Status</th>
+              <th>Explanation</th>
+            </tr>
+          </thead>
+          <tbody id="review-tbody">
+            <!-- Populated by JS -->
+          </tbody>
+        </table>
+      </div>
+
+      <div class="action-bar">
+        <a href="index.html" class="btn btn-outline">🏠 Back to Home</a>
+        <button class="btn btn-primary" onclick="sessionStorage.removeItem('nptel_result');window.history.back();">🔁 Retake Exam</button>
+      </div>
+
+    </div>
+  </section>
+
+</div>
+
+<div id="toast-container"></div>
+
+<script src="js/results.js"></script>
+<script>
+  // Animate progress bar on load
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      const bar = document.getElementById('score-progress');
+      if (bar) bar.style.width = bar.style.width; // trigger reflow
+    }, 300);
+  });
+</script>
+</body>
+</html>

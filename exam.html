@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exam — NPTEL Mock Exam Portal</title>
+  <meta name="description" content="NPTEL-style mock exam with timer, question palette, and mark for review.">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/exam.css">
+</head>
+<body>
+
+<!-- Loading Overlay -->
+<div class="loading-overlay" id="loading-overlay">
+  <div class="loading-spinner"></div>
+  <div class="loading-text">Loading your exam…</div>
+</div>
+
+<!-- Exam Layout -->
+<div class="exam-layout">
+
+  <!-- ── Exam Header ───────────────────────────────── -->
+  <header class="exam-header">
+    <div class="logo-small">
+      <div class="icon">N</div>
+      <span>NPTEL Mock</span>
+    </div>
+
+    <div class="exam-title" id="exam-title-text">Loading…</div>
+
+    <div class="timer-box">
+      <span class="timer-label">⏱ Time Left</span>
+      <span class="timer-value" id="timer-value">00:00</span>
+    </div>
+  </header>
+
+  <!-- ── Exam Body ─────────────────────────────────── -->
+  <div class="exam-body">
+
+    <!-- Left: Question Panel -->
+    <div class="question-panel">
+
+      <!-- Question Area -->
+      <div class="question-area">
+        <div class="question-meta">
+          <span class="question-number" id="question-number">Question 1 of 0</span>
+          <span class="question-type">Single Correct Answer</span>
+        </div>
+
+        <div class="question-text" id="question-text">
+          Loading question…
+        </div>
+
+        <div class="options-list" id="options-list">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- Bottom Navigation -->
+      <div class="question-nav">
+        <div class="nav-left">
+          <button class="btn btn-mark-review" id="btn-mark-review">🔖 Mark for Review</button>
+          <button class="btn btn-clear" id="btn-clear">✕ Clear Response</button>
+        </div>
+        <div class="nav-right">
+          <button class="btn btn-prev" id="btn-prev" disabled>◀ Previous</button>
+          <button class="btn btn-next" id="btn-next">💾 Save &amp; Next ▶</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Sidebar -->
+    <aside class="sidebar">
+
+      <!-- Candidate Info -->
+      <div class="candidate-section">
+        <div class="candidate-avatar">👤</div>
+        <div class="candidate-info">
+          <div class="name" id="candidate-name">Student</div>
+          <div class="sub">Mock Exam</div>
+        </div>
+      </div>
+
+      <!-- Legend -->
+      <div class="legend">
+        <div class="legend-title">Question Status</div>
+        <div class="legend-grid">
+          <div class="legend-item">
+            <div class="legend-dot dot-not-visited">1</div>
+            <span>Not Visited</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-dot dot-not-answered">2</div>
+            <span>Not Answered</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-dot dot-answered">3</div>
+            <span>Answered</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-dot dot-marked">4</div>
+            <span>Marked</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-dot dot-answered-marked">5</div>
+            <span>Ans+Marked</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Palette -->
+      <div class="palette-section">
+        <div class="palette-header">Question Navigator</div>
+        <div class="palette-grid" id="palette-grid">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- Submit Section -->
+      <div class="submit-section">
+        <div class="submit-summary">
+          <div class="summary-item answered">
+            <span class="count" id="count-answered">0</span>
+            <span class="label">Answered</span>
+          </div>
+          <div class="summary-item not-answered">
+            <span class="count" id="count-not-answered">0</span>
+            <span class="label">Not Ans.</span>
+          </div>
+          <div class="summary-item marked">
+            <span class="count" id="count-marked">0</span>
+            <span class="label">Marked</span>
+          </div>
+          <div class="summary-item total">
+            <span class="count" id="count-total">0</span>
+            <span class="label">Total</span>
+          </div>
+        </div>
+        <button class="btn-submit" id="btn-submit-exam">🏁 Submit Exam</button>
+      </div>
+
+    </aside>
+  </div>
+</div>
+
+<!-- Submit Confirmation Modal -->
+<div class="modal-overlay" id="submit-modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>🏁 Submit Exam?</h3>
+      <button class="modal-close" id="btn-cancel-submit">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:14px;color:var(--text-secondary);margin-bottom:16px;">
+        You are about to submit the exam. This action cannot be undone.
+      </p>
+      <div class="submit-modal-stats">
+        <div class="submit-stat answered">
+          <span class="num" id="modal-answered">0</span>
+          <span class="lbl">Answered</span>
+        </div>
+        <div class="submit-stat skipped">
+          <span class="num" id="modal-not-answered">0</span>
+          <span class="lbl">Skipped</span>
+        </div>
+        <div class="submit-stat marked-stat">
+          <span class="num" id="modal-marked">0</span>
+          <span class="lbl">Marked</span>
+        </div>
+      </div>
+      <div class="submit-warning" id="submit-warning" style="display:none;"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" id="btn-cancel-submit-2">Review Answers</button>
+      <button class="btn btn-primary" id="btn-confirm-submit">✅ Submit Now</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast-container"></div>
+
+<script src="js/exam.js"></script>
+<script>
+  // Extra cancel button binding
+  document.getElementById('btn-cancel-submit-2').addEventListener('click', () => {
+    document.getElementById('submit-modal-overlay').classList.remove('active');
+  });
+</script>
+</body>
+</html>

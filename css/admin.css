@@ -1,0 +1,506 @@
+/* ============================================================
+   Admin Panel Styles
+   ============================================================ */
+
+/* ── Layout ─────────────────────────────────────────────────── */
+.admin-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-main {
+  flex: 1;
+  padding: 32px 0 60px;
+}
+
+/* ── Upload Zone ────────────────────────────────────────────── */
+.upload-zone {
+  border: 2.5px dashed var(--border-strong);
+  border-radius: var(--radius-lg);
+  padding: 52px 32px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  background: #f8fafc;
+  position: relative;
+}
+
+.upload-zone:hover,
+.upload-zone.drag-over {
+  border-color: var(--primary);
+  background: #eff6ff;
+  transform: scale(1.005);
+}
+
+.upload-zone input[type="file"] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+}
+
+.upload-icon {
+  font-size: 52px;
+  margin-bottom: 16px;
+  display: block;
+}
+
+.upload-zone h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.upload-zone p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+}
+
+.upload-zone .file-types {
+  display: inline-flex;
+  gap: 8px;
+}
+
+.file-type-badge {
+  background: var(--primary);
+  color: white;
+  padding: 3px 12px;
+  border-radius: 99px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* ── CSV Format Guide ───────────────────────────────────────── */
+.format-guide {
+  background: linear-gradient(135deg, #eff6ff 0%, #f0fdf4 100%);
+  border: 1px solid #bfdbfe;
+  border-radius: var(--radius-md);
+  padding: 20px;
+  margin-top: 20px;
+}
+
+.format-guide h4 {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.format-guide .csv-preview {
+  background: #1e293b;
+  color: #94d35e;
+  border-radius: 6px;
+  padding: 14px 16px;
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  line-height: 1.7;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.format-guide .field-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.format-guide .field-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.field-name {
+  font-family: monospace;
+  background: #e0e7ff;
+  color: #4338ca;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+/* ── Exam Config Form ───────────────────────────────────────── */
+.config-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group.full-width {
+  grid-column: 1 / -1;
+}
+
+.form-group label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.form-group label .required {
+  color: var(--q-not-answered);
+  margin-left: 2px;
+}
+
+.form-control {
+  padding: 10px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-family: var(--font-sans);
+  color: var(--text-primary);
+  background: white;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+}
+
+.form-control:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(0,53,128,0.12);
+}
+
+.form-control::placeholder { color: #adb5bd; }
+
+textarea.form-control {
+  resize: vertical;
+  min-height: 80px;
+}
+
+select.form-control {
+  cursor: pointer;
+}
+
+.input-hint {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* ── Preview Table ──────────────────────────────────────────── */
+#preview-section {
+  display: none;
+}
+
+#preview-section.visible {
+  display: block;
+}
+
+.preview-stats {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.stat-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.stat-chip .stat-value {
+  font-size: 18px;
+  color: var(--primary);
+  font-weight: 800;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+}
+
+.preview-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.preview-table thead {
+  background: var(--primary);
+  color: white;
+  position: sticky;
+  top: 0;
+}
+
+.preview-table thead th {
+  padding: 12px 14px;
+  text-align: left;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.preview-table tbody tr {
+  border-bottom: 1px solid var(--border);
+  transition: background 0.15s;
+}
+
+.preview-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.preview-table tbody tr:hover {
+  background: #f8faff;
+}
+
+.preview-table td {
+  padding: 10px 14px;
+  color: var(--text-primary);
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.preview-table td.question-text {
+  max-width: 320px;
+}
+
+.correct-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: var(--q-answered);
+  color: white;
+  border-radius: 50%;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+/* ── Saved Exams ────────────────────────────────────────────── */
+.exams-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.exam-card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  transition: box-shadow 0.2s, transform 0.2s;
+  cursor: default;
+}
+
+.exam-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.exam-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.exam-card-icon {
+  width: 44px;
+  height: 44px;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.exam-card-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.icon-btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  transition: all 0.2s;
+}
+
+.icon-btn.delete {
+  background: #fff0f0;
+  color: var(--q-not-answered);
+}
+
+.icon-btn.delete:hover {
+  background: var(--q-not-answered);
+  color: white;
+}
+
+.exam-card-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.exam-card-desc {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.exam-card-meta {
+  display: flex;
+  gap: 12px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.exam-card-meta span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.no-exams {
+  text-align: center;
+  padding: 48px 24px;
+  color: var(--text-muted);
+}
+
+.no-exams .icon { font-size: 52px; margin-bottom: 12px; }
+.no-exams p { font-size: 15px; }
+
+/* ── Page Tabs ──────────────────────────────────────────────── */
+.admin-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 2px solid var(--border);
+  margin-bottom: 28px;
+}
+
+.admin-tab {
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.admin-tab:hover { color: var(--primary); }
+
+.admin-tab.active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+}
+
+.tab-panel { display: none; }
+.tab-panel.active { display: block; animation: fadeIn 0.25s ease; }
+
+/* ── Alert boxes ────────────────────────────────────────────── */
+.alert {
+  padding: 14px 18px;
+  border-radius: var(--radius-md);
+  font-size: 13.5px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.alert-info {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: #1e40af;
+}
+
+.alert-warning {
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  color: #92400e;
+}
+
+.alert-error {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+}
+
+.alert-icon { font-size: 18px; flex-shrink: 0; }
+
+/* ── Error rows ─────────────────────────────────────────────── */
+.preview-table tbody tr.row-error {
+  background: #fff0f0;
+}
+
+.preview-table tbody tr.row-error td {
+  color: #b91c1c;
+}
+
+/* ── Download Sample ────────────────────────────────────────── */
+.sample-download {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--primary);
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-style: dashed;
+  text-underline-offset: 3px;
+}
+
+.sample-download:hover { color: var(--accent); }
+
+/* ── Responsive ─────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .config-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .exams-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-tab {
+    padding: 10px 14px;
+    font-size: 13px;
+  }
+}
