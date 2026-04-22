@@ -11,6 +11,16 @@
 <body>
 <div class="admin-layout">
 
+  <!-- Firebase config banner -->
+  <div id="firebase-banner" style="display:none;background:#fffbeb;border-bottom:2px solid #f59e0b;padding:12px 24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+    <span style="font-size:22px;">⚠️</span>
+    <div style="flex:1;min-width:200px;">
+      <strong style="color:#92400e;">Firebase not configured</strong> — Exams are currently saved locally (only visible to you).
+      <span style="color:#78350f;"> To share exams with everyone, <a href="setup.html" style="color:#d97706;font-weight:700;">follow the Firebase setup guide →</a></span>
+    </div>
+    <span id="storage-mode-badge" style="background:#fef3c7;color:#92400e;padding:4px 14px;border-radius:99px;font-size:13px;font-weight:700;">💾 Local Storage Only</span>
+  </div>
+
   <!-- Header -->
   <header class="site-header">
     <div class="logo">
@@ -232,8 +242,12 @@
 
 <div id="toast-container"></div>
 
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <!-- PapaParse CDN -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script src="js/config.js"></script>
 <script src="js/admin.js"></script>
 </body>
 </html>

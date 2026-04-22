@@ -1,16 +1,27 @@
 /* ============================================================
-   Exam Engine JavaScript — NPTEL Style
+   Exam Engine — Firebase + localStorage fallback
    ============================================================ */
 
-const DB_KEY      = 'nptel_exams';
-const SESSION_KEY = 'nptel_session';
+let dbRef = null;
 
-// ── Utility ───────────────────────────────────────────────────
-function getExams() {
-  try { return JSON.parse(localStorage.getItem(DB_KEY)) || []; }
-  catch { return []; }
+function initFirebase() {
+  if (!FIREBASE_ENABLED) return false;
+  try {
+    if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+    dbRef = firebase.database().ref(DB_PATH);
+    return true;
+  } catch(e) { console.error('Firebase init failed:', e); return false; }
 }
 
+// LocalStorage fallback
+const LS_KEY = 'nptel_exams';
+function getLocalExams() {
+  try { return JSON.parse(localStorage.getItem(LS_KEY)) || []; } catch { return []; }
+}
+
+const SESSION_KEY = 'nptel_session';
+
+// ── Toast ─────────────────────────────────────────────────────
 function showToast(message, type = 'info') {
   const icons = { success: '✅', error: '❌', info: 'ℹ️', warning: '⚠️' };
   const container = document.getElementById('toast-container');
@@ -23,29 +34,37 @@ function showToast(message, type = 'info') {
 }
 
 // ── State ─────────────────────────────────────────────────────
-let exam          = null;
-let questions     = [];
-let currentIndex  = 0;
-let answers       = {};      // { qIndex: 'A' | 'B' | 'C' | 'D' }
-let markedReview  = new Set();
-let visited       = new Set();
+let exam         = null;
+let questions    = [];
+let currentIndex = 0;
+let answers      = {};
+let markedReview = new Set();
+let visited      = new Set();
 let timerInterval = null;
-let timeRemaining = 0;       // seconds
+let timeRemaining = 0;
 let examSubmitted = false;
+let firebaseReady = false;
 
 // ── Init ──────────────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', () => {
-  const params  = new URLSearchParams(window.location.search);
-  const examId  = params.get('id');
+document.addEventListener('DOMContentLoaded', async () => {
+  firebaseReady = initFirebase();
 
-  if (!examId) { redirectHome('No exam ID specified.'); return; }
+  const params = new URLSearchParams(window.location.search);
+  const examId = params.get('id');
 
-  const exams = getExams();
-  exam = exams.find(e => e.id === examId);
+  if (!examId) { alert('No exam ID specified.'); window.location.href = 'index.html'; return; }
 
-  if (!exam) { redirectHome('Exam not found. It may have been deleted.'); return; }
+  try {
+    exam = await loadExam(examId);
+  } catch(e) {
+    alert('Failed to load exam: ' + e.message);
+    window.location.href = 'index.html';
+    return;
+  }
 
-  // Check for saved session (in case of page reload)
+  if (!exam) { alert('Exam not found. It may have been deleted.'); window.location.href = 'index.html'; return; }
+
+  // Check for saved session
   const savedSession = loadSession(examId);
   if (savedSession && !savedSession.submitted) {
     if (confirm('Resume your previous session?')) {
@@ -59,29 +78,33 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-function redirectHome(msg) {
-  alert(msg);
-  window.location.href = 'index.html';
+// ── Load Exam ─────────────────────────────────────────────────
+async function loadExam(examId) {
+  if (firebaseReady) {
+    const snapshot = await dbRef.child(examId).once('value');
+    return snapshot.val();
+  } else {
+    const exams = getLocalExams();
+    return exams.find(e => e.id === examId) || null;
+  }
 }
 
 function initExam() {
-  questions    = exam.questions;
+  questions     = exam.questions;
   timeRemaining = exam.duration * 60;
-  answers      = {};
-  markedReview = new Set();
-  visited      = new Set([0]);
-  currentIndex = 0;
+  answers       = {};
+  markedReview  = new Set();
+  visited       = new Set([0]);
+  currentIndex  = 0;
 
-  // Shuffle options if configured
   if (exam.shuffleOptions) {
     questions = questions.map(q => {
-      const opts = ['A','B','C','D'];
+      const opts    = ['A','B','C','D'];
       const shuffled = shuffleArray(opts);
-      const newOptions = {};
-      shuffled.forEach((orig, i) => { newOptions[opts[i]] = q.options[orig]; });
-      // Remap correct answer
-      const correctOptIndex = shuffled.indexOf(q.correct);
-      return { ...q, options: newOptions, correct: opts[correctOptIndex], _optionMap: shuffled };
+      const newOpts  = {};
+      shuffled.forEach((orig, i) => { newOpts[opts[i]] = q.options[orig]; });
+      const correctIdx = shuffled.indexOf(q.correct);
+      return { ...q, options: newOpts, correct: opts[correctIdx] };
     });
   }
 
@@ -100,7 +123,6 @@ function restoreSession(session) {
   markedReview  = new Set(session.markedReview || []);
   visited       = new Set(session.visited || [0]);
   currentIndex  = session.currentIndex || 0;
-
   renderExamHeader();
   buildPalette();
   renderQuestion();
@@ -120,10 +142,7 @@ function startTimer() {
     timeRemaining--;
     updateTimerDisplay();
     saveSession();
-    if (timeRemaining <= 0) {
-      clearInterval(timerInterval);
-      autoSubmit();
-    }
+    if (timeRemaining <= 0) { clearInterval(timerInterval); autoSubmit(); }
   }, 1000);
 }
 
@@ -133,21 +152,17 @@ function updateTimerDisplay() {
   const h = Math.floor(timeRemaining / 3600);
   const m = Math.floor((timeRemaining % 3600) / 60);
   const s = timeRemaining % 60;
-  el.textContent = h > 0
-    ? `${pad(h)}:${pad(m)}:${pad(s)}`
-    : `${pad(m)}:${pad(s)}`;
-
+  el.textContent = h > 0 ? `${pad(h)}:${pad(m)}:${pad(s)}` : `${pad(m)}:${pad(s)}`;
   el.className = 'timer-value';
-  if (timeRemaining < 300)       el.classList.add('danger');
-  else if (timeRemaining < 600)  el.classList.add('warning');
+  if (timeRemaining < 300) el.classList.add('danger');
+  else if (timeRemaining < 600) el.classList.add('warning');
 }
 
 function pad(n) { return String(n).padStart(2, '0'); }
 
-// ── Render Header ─────────────────────────────────────────────
+// ── Header ────────────────────────────────────────────────────
 function renderExamHeader() {
   document.getElementById('exam-title-text').textContent = exam.name;
-  document.getElementById('candidate-name').textContent  = 'Student';
 }
 
 // ── Render Question ───────────────────────────────────────────
@@ -156,54 +171,36 @@ function renderQuestion() {
   if (!q) return;
 
   visited.add(currentIndex);
-
-  // Question meta
   document.getElementById('question-number').textContent = `Question ${currentIndex + 1} of ${questions.length}`;
-
-  // Question text
   document.getElementById('question-text').innerHTML = formatText(q.question);
 
-  // Options
   const optionsContainer = document.getElementById('options-list');
   optionsContainer.innerHTML = '';
 
-  const letters = ['A', 'B', 'C', 'D'];
-  letters.forEach(letter => {
-    const optText = q.options[letter];
+  ['A','B','C','D'].forEach(letter => {
     const isSelected = answers[currentIndex] === letter;
-
     const item = document.createElement('label');
     item.className = `option-item${isSelected ? ' selected' : ''}`;
     item.dataset.letter = letter;
     item.innerHTML = `
       <input type="radio" name="option" value="${letter}" ${isSelected ? 'checked' : ''}>
-      <span class="option-letter">${letter}</span>
-      <span class="option-text">${formatText(optText)}</span>
-    `;
-
+      <span class="option-letter" style="${isSelected ? 'background:var(--primary);color:white;border-color:var(--primary)' : ''}">${letter}</span>
+      <span class="option-text">${formatText(q.options[letter])}</span>`;
     item.addEventListener('click', () => selectOption(letter));
     optionsContainer.appendChild(item);
   });
 
-  // Mark review button state
   const btnMark = document.getElementById('btn-mark-review');
-  btnMark.textContent = markedReview.has(currentIndex)
-    ? '🔖 Unmark Review'
-    : '🔖 Mark for Review';
-
-  // Navigation buttons
+  btnMark.textContent = markedReview.has(currentIndex) ? '🔖 Unmark Review' : '🔖 Mark for Review';
   document.getElementById('btn-prev').disabled = currentIndex === 0;
-  document.getElementById('btn-next').textContent = currentIndex === questions.length - 1 ? '✅ Save & End' : '💾 Save & Next';
+  document.getElementById('btn-next').textContent = currentIndex === questions.length - 1 ? '✅ Save & End' : '💾 Save & Next ▶';
 
-  // Update palette
   updatePaletteFocus();
   updateSidebar();
 }
 
 function formatText(text) {
-  if (!text) return '';
-  // Basic formatting: preserve line breaks, handle code-like content
-  return String(text).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+  return String(text || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
 }
 
 // ── Select Option ─────────────────────────────────────────────
@@ -211,13 +208,13 @@ function selectOption(letter) {
   if (examSubmitted) return;
   answers[currentIndex] = letter;
 
-  // Update option UI
   document.querySelectorAll('.option-item').forEach(item => {
-    const isSelected = item.dataset.letter === letter;
-    item.classList.toggle('selected', isSelected);
-    item.querySelector('.option-letter').style.background = isSelected ? 'var(--primary)' : '';
-    item.querySelector('.option-letter').style.color = isSelected ? 'white' : '';
-    item.querySelector('.option-letter').style.borderColor = isSelected ? 'var(--primary)' : '';
+    const sel = item.dataset.letter === letter;
+    item.classList.toggle('selected', sel);
+    const letterEl = item.querySelector('.option-letter');
+    letterEl.style.background   = sel ? 'var(--primary)' : '';
+    letterEl.style.color        = sel ? 'white' : '';
+    letterEl.style.borderColor  = sel ? 'var(--primary)' : '';
   });
 
   updatePaletteBtn(currentIndex);
@@ -232,25 +229,17 @@ document.getElementById('btn-prev').addEventListener('click', () => {
 
 document.getElementById('btn-next').addEventListener('click', () => {
   if (currentIndex < questions.length - 1) {
-    currentIndex++;
-    visited.add(currentIndex);
-    renderQuestion();
+    currentIndex++; visited.add(currentIndex); renderQuestion();
   } else {
-    // Last question — save and go to submit
     openSubmitModal();
   }
 });
 
 document.getElementById('btn-mark-review').addEventListener('click', () => {
-  if (markedReview.has(currentIndex)) {
-    markedReview.delete(currentIndex);
-    showToast('Removed from review', 'info');
-  } else {
-    markedReview.add(currentIndex);
-    showToast('Marked for review', 'info');
-  }
+  if (markedReview.has(currentIndex)) { markedReview.delete(currentIndex); showToast('Removed from review', 'info'); }
+  else { markedReview.add(currentIndex); showToast('Marked for review', 'info'); }
   updatePaletteBtn(currentIndex);
-  renderQuestion(); // update button text
+  renderQuestion();
   updateSidebar();
   saveSession();
 });
@@ -259,9 +248,8 @@ document.getElementById('btn-clear').addEventListener('click', () => {
   delete answers[currentIndex];
   document.querySelectorAll('.option-item').forEach(item => {
     item.classList.remove('selected');
-    item.querySelector('.option-letter').style.background = '';
-    item.querySelector('.option-letter').style.color = '';
-    item.querySelector('.option-letter').style.borderColor = '';
+    const el = item.querySelector('.option-letter');
+    el.style.background = el.style.color = el.style.borderColor = '';
   });
   updatePaletteBtn(currentIndex);
   updateSidebar();
@@ -273,29 +261,22 @@ document.getElementById('btn-clear').addEventListener('click', () => {
 function buildPalette() {
   const grid = document.getElementById('palette-grid');
   grid.innerHTML = '';
-
   questions.forEach((_, i) => {
     const btn = document.createElement('button');
     btn.className = 'palette-btn';
     btn.textContent = i + 1;
     btn.dataset.index = i;
     btn.dataset.status = 'not-visited';
-    btn.addEventListener('click', () => {
-      currentIndex = i;
-      visited.add(i);
-      renderQuestion();
-    });
+    btn.addEventListener('click', () => { currentIndex = i; visited.add(i); renderQuestion(); });
     grid.appendChild(btn);
   });
-
   updateAllPaletteBtns();
 }
 
-function getQuestionStatus(index) {
-  const answered = answers[index] !== undefined;
-  const marked   = markedReview.has(index);
-  const vis      = visited.has(index);
-
+function getQuestionStatus(i) {
+  const answered = answers[i] !== undefined;
+  const marked   = markedReview.has(i);
+  const vis      = visited.has(i);
   if (answered && marked) return 'answered-marked';
   if (marked)             return 'marked';
   if (answered)           return 'answered';
@@ -303,11 +284,9 @@ function getQuestionStatus(index) {
   return 'not-visited';
 }
 
-function updatePaletteBtn(index) {
-  const btn = document.querySelector(`.palette-btn[data-index="${index}"]`);
-  if (!btn) return;
-  const status = getQuestionStatus(index);
-  btn.dataset.status = status;
+function updatePaletteBtn(i) {
+  const btn = document.querySelector(`.palette-btn[data-index="${i}"]`);
+  if (btn) btn.dataset.status = getQuestionStatus(i);
 }
 
 function updateAllPaletteBtns() {
@@ -319,21 +298,16 @@ function updatePaletteFocus() {
     btn.classList.toggle('active-question', parseInt(btn.dataset.index) === currentIndex);
   });
   updatePaletteBtn(currentIndex);
-
-  // Scroll palette btn into view
-  const activeBtn = document.querySelector('.palette-btn.active-question');
-  if (activeBtn) activeBtn.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  const active = document.querySelector('.palette-btn.active-question');
+  if (active) active.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
 }
 
-// ── Sidebar Summary ───────────────────────────────────────────
+// ── Sidebar ───────────────────────────────────────────────────
 function updateSidebar() {
-  const answered    = Object.keys(answers).length;
-  const notAnswered = questions.length - answered;
-  const marked      = markedReview.size;
-
+  const answered = Object.keys(answers).length;
   document.getElementById('count-answered').textContent    = answered;
-  document.getElementById('count-not-answered').textContent = notAnswered;
-  document.getElementById('count-marked').textContent      = marked;
+  document.getElementById('count-not-answered').textContent = questions.length - answered;
+  document.getElementById('count-marked').textContent      = markedReview.size;
   document.getElementById('count-total').textContent       = questions.length;
 }
 
@@ -343,16 +317,12 @@ document.getElementById('btn-submit-exam').addEventListener('click', openSubmitM
 function openSubmitModal() {
   const answered    = Object.keys(answers).length;
   const notAnswered = questions.length - answered;
-  const marked      = markedReview.size;
-
   document.getElementById('modal-answered').textContent    = answered;
   document.getElementById('modal-not-answered').textContent = notAnswered;
-  document.getElementById('modal-marked').textContent      = marked;
-
+  document.getElementById('modal-marked').textContent      = markedReview.size;
   const warning = document.getElementById('submit-warning');
   warning.style.display = notAnswered > 0 ? 'block' : 'none';
   warning.textContent = `⚠️ You have ${notAnswered} unanswered question(s). They will be marked as unattempted.`;
-
   document.getElementById('submit-modal-overlay').classList.add('active');
 }
 
@@ -363,7 +333,7 @@ document.getElementById('btn-cancel-submit').addEventListener('click', () => {
 document.getElementById('btn-confirm-submit').addEventListener('click', submitExam);
 
 function autoSubmit() {
-  showToast('Time is up! Submitting exam...', 'warning');
+  showToast('Time is up! Submitting exam…', 'warning');
   setTimeout(submitExam, 2000);
 }
 
@@ -373,24 +343,20 @@ function submitExam() {
   clearInterval(timerInterval);
   document.getElementById('submit-modal-overlay').classList.remove('active');
 
-  // Calculate results
   let correct = 0, wrong = 0, skipped = 0;
   const reviewData = questions.map((q, i) => {
-    const userAns = answers[i];
+    const ua = answers[i];
     let status;
-    if (!userAns) { skipped++; status = 'skipped'; }
-    else if (userAns === q.correct) { correct++; status = 'correct'; }
-    else { wrong++; status = 'wrong'; }
-    return { ...q, userAnswer: userAns || null, status, qIndex: i + 1 };
+    if (!ua)             { skipped++; status = 'skipped'; }
+    else if (ua === q.correct) { correct++; status = 'correct'; }
+    else                 { wrong++;   status = 'wrong'; }
+    return { ...q, userAnswer: ua || null, status, qIndex: i + 1 };
   });
 
-  const score = correct;
-  const total = questions.length;
-
   const resultPackage = {
-    examId: exam.id,
-    examName: exam.name,
-    score, total, correct, wrong, skipped,
+    examId: exam.id, examName: exam.name,
+    score: correct, total: questions.length,
+    correct, wrong, skipped,
     timeTaken: (exam.duration * 60) - timeRemaining,
     reviewData,
     submittedAt: new Date().toISOString()
@@ -398,22 +364,15 @@ function submitExam() {
 
   sessionStorage.setItem('nptel_result', JSON.stringify(resultPackage));
   clearSession(exam.id);
-
   window.location.href = 'results.html';
 }
 
-// ── Session Persistence ───────────────────────────────────────
+// ── Session ───────────────────────────────────────────────────
 function saveSession() {
   const session = {
-    examId: exam.id,
-    questions,
-    timeRemaining,
-    answers,
-    markedReview: [...markedReview],
-    visited: [...visited],
-    currentIndex,
-    submitted: false,
-    savedAt: Date.now()
+    examId: exam.id, questions, timeRemaining, answers,
+    markedReview: [...markedReview], visited: [...visited],
+    currentIndex, submitted: false, savedAt: Date.now()
   };
   sessionStorage.setItem(`${SESSION_KEY}_${exam.id}`, JSON.stringify(session));
 }
@@ -423,7 +382,6 @@ function loadSession(examId) {
     const s = sessionStorage.getItem(`${SESSION_KEY}_${examId}`);
     if (!s) return null;
     const session = JSON.parse(s);
-    // Restore Set objects from arrays
     session.markedReview = new Set(session.markedReview || []);
     session.visited      = new Set(session.visited || []);
     session.answers      = session.answers || {};
@@ -435,7 +393,6 @@ function clearSession(examId) {
   sessionStorage.removeItem(`${SESSION_KEY}_${examId}`);
 }
 
-// ── Shuffle ───────────────────────────────────────────────────
 function shuffleArray(arr) {
   const a = [...arr];
   for (let i = a.length - 1; i > 0; i--) {
